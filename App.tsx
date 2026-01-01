@@ -44,6 +44,12 @@ const DEFAULT_SETTINGS: SansthaSettings = {
 
 const INITIAL_MEMBERS: FamilyMember[] = [
   { id: 'm_umesh_mehta', fullName: 'Umesh Suresh Mehta', nativeName: 'श्री उमेश सुरेश मेहता', gender: 'Male', dob: '1982-01-01', maritalStatus: 'Married', education: 'Graduate', nativeEducation: 'स्नातक', occupation: 'Business/Secretary', nativeOccupation: 'व्यवसाय/सचिव', mobile: '9479431388', familyId: 'f_mehta_umesh', isHeadOfFamily: true, relationToHead: 'Self', status: 'Approved', currentAddress: { street: 'Akshar Dham Colony Rastipura', city: 'Burhanpur', state: 'M.P.', pincode: '450331', country: 'India' }, nativeCurrentAddress: 'अक्षर धाम कॉलोनी, रस्तीपुरा, बुरहानपुर, म.प्र. 450331', nativePlace: 'Burhanpur', nativeNativePlace: 'बुरहानpur', bloodGroup: 'B+' },
+  { id: 'm_latesh_shah', fullName: 'Latesh Bhagwandas Shah', nativeName: 'श्री लतेश भगवानदास शाह', gender: 'Male', dob: '1988-05-15', maritalStatus: 'Married', education: 'Graduate', occupation: 'Business', mobile: '9300599549', familyId: 'f_shah_latesh', isHeadOfFamily: true, relationToHead: 'Self', status: 'Approved', currentAddress: { street: 'New Akshar Dham Colony Rastipura', city: 'Burhanpur', state: 'M.P.', pincode: '450331', country: 'India' }, nativeCurrentAddress: 'न्यू अक्षर धाम कॉलोनी, रस्तीपुरा, बुरहानपुर, म.प्र.', nativePlace: 'Burhanpur', nativeNativePlace: 'बुरहानपुर' },
+  { id: 'm_bhagwandas_shah', fullName: 'Bhagwandas Shah', nativeName: 'श्री भगवानदास शाह', gender: 'Male', dob: '1956-05-02', maritalStatus: 'Married', education: 'Undergraduate', occupation: 'Retired', mobile: '7000539098', familyId: 'f_shah_latesh', isHeadOfFamily: false, relationToHead: 'Father', status: 'Approved', currentAddress: { street: 'New Akshar Dham Colony Rastipura', city: 'Burhanpur', state: 'M.P.', pincode: '450331', country: 'India' } },
+  { id: 'm_sheela_ben_shah', fullName: 'Sheela Ben Shah', nativeName: 'श्रीमती शीला बेन शाह', gender: 'Female', dob: '1959-06-26', maritalStatus: 'Married', education: 'Housewife', occupation: 'Home Maker', mobile: '', familyId: 'f_shah_latesh', isHeadOfFamily: false, relationToHead: 'Mother', status: 'Approved', currentAddress: { street: 'New Akshar Dham Colony Rastipura', city: 'Burhanpur', state: 'M.P.', pincode: '450331', country: 'India' } },
+  { id: 'm_rupali_shah', fullName: 'Rupali Shah', nativeName: 'श्रीमती रूपाली शाह', gender: 'Female', dob: '1990-03-15', maritalStatus: 'Married', education: 'Graduate', occupation: 'Home Maker', mobile: '', familyId: 'f_shah_latesh', isHeadOfFamily: false, relationToHead: 'Wife', status: 'Approved', currentAddress: { street: 'New Akshar Dham Colony Rastipura', city: 'Burhanpur', state: 'M.P.', pincode: '450331', country: 'India' } },
+  { id: 'm_chitravi_shah', fullName: 'Chitravi Shah', nativeName: 'कु. चित्रावी शाह', gender: 'Female', dob: '2015-05-16', maritalStatus: 'Single', education: 'Student', occupation: 'Education', mobile: '', familyId: 'f_shah_latesh', isHeadOfFamily: false, relationToHead: 'Daughter', status: 'Approved', currentAddress: { street: 'New Akshar Dham Colony Rastipura', city: 'Burhanpur', state: 'M.P.', pincode: '450331', country: 'India' } },
+  { id: 'm_sejal_shah', fullName: 'Sejal Shah', nativeName: 'कु. सेजल शाह', gender: 'Female', dob: '2019-10-11', maritalStatus: 'Single', education: 'Student', occupation: 'Education', mobile: '', familyId: 'f_shah_latesh', isHeadOfFamily: false, relationToHead: 'Daughter', status: 'Approved', currentAddress: { street: 'New Akshar Dham Colony Rastipura', city: 'Burhanpur', state: 'M.P.', pincode: '450331', country: 'India' } },
   { id: 'm_tarun_gandhi', fullName: 'Tarun Shankarlal Gandhi', nativeName: 'श्री तरुण शंकरलाल गांधी', gender: 'Male', dob: '1992-01-01', maritalStatus: 'Married', education: 'Graduate', nativeEducation: 'स्नातक', occupation: 'Professional', nativeOccupation: 'व्यवसाय', mobile: '7696903206', familyId: 'f_gandhi_tarun', isHeadOfFamily: true, relationToHead: 'Self', status: 'Approved', currentAddress: { street: 'B12 Akshar Dham Colony Rastipura', city: 'Burhanpur', state: 'M.P.', pincode: '450331', country: 'India' }, nativeCurrentAddress: 'बी12 अक्षर धाम कॉलोनी, रस्तीपुरा, बुरहानपुर', nativePlace: 'Burhanpur', nativeNativePlace: 'बुरहानपुर', bloodGroup: 'O+' },
 ];
 
@@ -82,15 +88,26 @@ const App: React.FC = () => {
     setShowForm(true);
   };
 
-  const handleFormSubmit = (member: FamilyMember, addAnother: boolean) => {
+  const handleFormSubmit = (mainMember: FamilyMember, otherMembers: FamilyMember[] = []) => {
     setState(prev => {
-      const idx = prev.members.findIndex(m => m.id === member.id);
-      const newMembers = [...prev.members];
-      if (idx >= 0) newMembers[idx] = member;
-      else newMembers.push(member);
+      let newMembers = [...prev.members];
+      
+      // Update or add the main member
+      const mainIdx = newMembers.findIndex(m => m.id === mainMember.id);
+      if (mainIdx >= 0) newMembers[mainIdx] = mainMember;
+      else newMembers.push(mainMember);
+
+      // Bulk update/add sub-members if provided
+      otherMembers.forEach(sm => {
+        const smIdx = newMembers.findIndex(m => m.id === sm.id);
+        if (smIdx >= 0) newMembers[smIdx] = sm;
+        else newMembers.push(sm);
+      });
+
       return { ...prev, members: newMembers };
     });
-    if (!addAnother) { setShowForm(false); setEditingMember(null); }
+    setShowForm(false);
+    setEditingMember(null);
   };
 
   return (
